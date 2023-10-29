@@ -12,7 +12,7 @@ with open('templates/Testing.csv', newline='') as f:
         symptoms = symptoms[:len(symptoms)-1]
 @app.route('/', methods=['GET'])
 def dropdown():
-        return render_template('includes/default.html', symptoms=symptoms)
+        return render_template('includes/test.html', symptoms=symptoms)
 
 @app.route('/disease_predict', methods=['POST'])
 def disease_predict():
@@ -39,16 +39,9 @@ def disease_predict():
 # @app.route('/default')
 # def default():
 #         return render_template('includes/default.html')
- 
-@app.route('/find_doctor', methods=['POST'])
-def get_location():
-    location = request.form['doctor']
-    return render_template('find_doctor.html',location=location,symptoms=symptoms)
 
-@app.route('/drug', methods=['POST'])
-def drugs():
-    medicine = request.form['medicine']
-    return render_template('homepage.html',medicine=medicine,symptoms=symptoms)
+
+ 
 
 if __name__ == '__main__':
     app.run(debug=True)
