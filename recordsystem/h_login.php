@@ -3,54 +3,39 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Patient Register</title>
+    <title>Hospital Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/style.css">
 
   </head>
   <body>
-<!--PHP Code-->
+
 <?php
+session_start();
 include 'conn.php';
 
-if (isset($_SESSION['contact'])) {
-  header("Location: p_dash.php"); // Redirect to p_dash.php
+if (isset($_SESSION['name'])) {
+  header("Location: h_dash.php"); // Redirect to h_dash.php
   exit();
 }
 
-// Check if the request method is POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the input values from the form
-    $contact = $_POST['contact'];
-    $name = $_POST['name'];
-    $password = $_POST['password'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Sanitize input to prevent SQL injection
-    $contact = mysqli_real_escape_string($conn, $contact);
-    $name = mysqli_real_escape_string($conn, $name);
-    $password = mysqli_real_escape_string($conn, $password);
+$name = $_POST['name'];
+$password = $_POST['password'];
 
-    // Check if the contact number already exists
-    $checkQuery = "SELECT * FROM users WHERE contact='$contact'";
-    $result = mysqli_query($conn, $checkQuery);
+// Check if user exists based on name number and password
+$sql = "SELECT * FROM hospital WHERE name='$name' AND password='$password'";
+$result = mysqli_query($conn, $sql);
 
-    if (mysqli_num_rows($result) > 0) {
-        // User already exists
-        echo '<script>alert("User with this contact number already exists.Try Login");</script>';
-    } else {
-        // Insert new user
-        $insertQuery = "INSERT INTO users (contact, name, password) VALUES ('$contact', '$name', '$password')";
-        if (mysqli_query($conn, $insertQuery)) {
-          echo '<script>alert("User registered successfully! Login Now");</script>';
-
-        } else {
-          echo '<script>alert("Error: ' . mysqli_error($conn) . '");</script>';
-        }
-    }
-
-    // Close the connection
-    mysqli_close($conn);
+if (mysqli_num_rows($result) == 1) {
+    $_SESSION['name'] = $name;
+    header('Location: h_dash.php');
+} else {
+    echo "Invalid name number or password.";
 }
+}
+mysqli_close($conn);
 ?>
 
 
@@ -73,14 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </nav>
 
           <div class="login-page">
-          <h1 style="text-align:center;">Patient Register</h1>
+          <h1 style="text-align:center;">Hospital Login</h1>
   <div class="form">
-    <form class="login-form" action="p_reg.php" method="POST">
-      <input type="number" name="contact" placeholder="contact number" />
-      <input type="text" name="name" placeholder="full name" />
+    <form class="login-form" action="h_login.php" method="POST">
+      <input type="name" name="name" placeholder="name"/>
       <input type="password" name="password" placeholder="password"/>
-      <button type="submit" value="Register">create</button>
-      <p class="message">Already registered? <a href="./p_login.php">Login Here</a></p>
+      <button>login</button>
+      <p class="message">Not registered? <a href="./h_reg.php">Create an account</a></p>
     </form>
   </div>
 </div>
@@ -93,6 +77,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </script>
   </body>
 </html>
-
-
-
